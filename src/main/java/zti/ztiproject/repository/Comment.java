@@ -1,0 +1,32 @@
+package zti.ztiproject.repository;
+
+import org.springframework.data.mongodb.core.mapping.Field;
+
+public class Comment {
+
+    @Field
+    private String author;
+    @Field
+    private String comment;
+
+    public Comment(String author, String comment) {
+        this.author = author;
+        this.comment = comment;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+}

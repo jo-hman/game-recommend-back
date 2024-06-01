@@ -1,4 +1,4 @@
-package com.jochman.zti.auth.service;
+package zti.ztiproject.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class JwtService {
+public class AuthService {
     private static String secretKey = "123901823908109238091283091823908129038190283901823908120938109283091823091823123901823";
 
     private static long jwtExpiration = 6 * 1000 * 60 * 60;

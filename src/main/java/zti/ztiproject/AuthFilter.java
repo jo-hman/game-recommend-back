@@ -1,11 +1,9 @@
-package com.jochman.zti.auth.config;
+package zti.ztiproject;
 
-import com.jochman.zti.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,31 +12,28 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
+import zti.ztiproject.service.AuthService;
 
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final HandlerExceptionResolver handlerExceptionResolver;
-    private final JwtService jwtService;
+public class AuthFilter extends OncePerRequestFilter {
+    private final AuthService authService;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver
+    public AuthFilter(
+            AuthService authService,
+            UserDetailsService userDetailsService
     ) {
-        this.jwtService = jwtService;
+        this.authService = authService;
         this.userDetailsService = userDetailsService;
-        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
@@ -48,14 +43,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
-        final String userEmail = jwtService.extractUsername(jwt);
+        final String userEmail = authService.extractUsername(jwt);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (userEmail != null && authentication == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
-            if (jwtService.isTokenValid(jwt, userDetails)) {
+            if (authService.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

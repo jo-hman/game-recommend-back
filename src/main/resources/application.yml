@@ -1,1 +1,5 @@
-spring.application.name=ZTIproject
+spring.application.name: ZTIproject
+
+server:
+  port: 8080
+

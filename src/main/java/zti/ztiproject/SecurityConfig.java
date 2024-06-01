@@ -1,5 +1,5 @@
 
-package com.jochman.zti.auth.config;
+package zti.ztiproject;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,29 +23,28 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthFilter authFilter;
 
     public SecurityConfig(
-            JwtAuthenticationFilter jwtAuthenticationFilter,
+            AuthFilter authFilter,
             AuthenticationProvider authenticationProvider
     ) {
         this.authenticationProvider = authenticationProvider;
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authFilter = authFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http.exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(new AntPathRequestMatcher("/users/**"))
+                        .requestMatchers(new AntPathRequestMatcher("/accounts/**"))
                         .permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -54,16 +53,16 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:3000,https://zti-project-frontend.vercel.app/"));
-        configuration.setAllowedMethods(List.of("GET","POST"));
-        configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**",configuration);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }
+
 
 
 }

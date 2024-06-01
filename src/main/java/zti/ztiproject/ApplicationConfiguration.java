@@ -1,6 +1,5 @@
-package com.jochman.zti.auth.config;
+package zti.ztiproject;
 
-import com.jochman.zti.auth.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,18 +9,19 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import zti.ztiproject.repository.AccountRepository;
 
 @Configuration
 public class ApplicationConfiguration {
-    private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
 
-    public ApplicationConfiguration(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ApplicationConfiguration(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
     @Bean
     UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
+        return username -> accountRepository.findById(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
